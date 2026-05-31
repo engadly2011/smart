@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VHJG09N4SV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-VHJG09N4SV');
+</script>
 <title>مستشار استكشاف ميول ومهارات الطفل الذكي</title>
 <meta name="description" content="أداة استرشادية تفاعلية تساعد أولياء الأمور على ملاحظة ميول ومهارات أطفالهم في ثماني مجالات، مع دليل أنشطة منزلية بديلة للشاشات.">
 <meta name="theme-color" content="#020205">
@@ -122,6 +130,12 @@
   .btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--glass-line)}
   .btn-wa{background:linear-gradient(135deg,#1ed760,#0f9d58);box-shadow:0 0 24px rgba(16,185,129,.5)}
   .btn-wa:hover{transform:translateY(-2px)}
+  .btn-get{font-size:1.08rem;padding:18px 24px;background:linear-gradient(135deg,var(--violet),#7c3aed);
+    box-shadow:0 0 26px rgba(139,92,246,.7), 0 10px 30px rgba(139,92,246,.45), inset 0 1px 0 rgba(255,255,255,.25);
+    animation:getpulse 2.6s ease-in-out infinite}
+  .btn-get:hover{transform:translateY(-2px)}
+  @keyframes getpulse{0%,100%{box-shadow:0 0 22px rgba(139,92,246,.55),0 10px 30px rgba(139,92,246,.4)}
+    50%{box-shadow:0 0 36px rgba(139,92,246,.9),0 12px 36px rgba(139,92,246,.55)}}
 
   /* ---------- Quiz ---------- */
   #quizCard{padding:26px 22px}
@@ -396,14 +410,10 @@
     <div class="price-row">
       <span class="price"><span id="priceVal">15</span> <small id="priceCur">ريال سعودي</small></span>
     </div>
-    <p class="price-note">دفعة واحدة — تحميل فوري بعد إتمام الدفع.</p>
+    <p class="price-note">السعر النهائي للحقيبة الرقمية · يتم تأكيد الطلب والدفع وتسليم الملف عبر الواتساب مباشرةً مع فريقنا.</p>
 
-    <div class="pay-methods">
-      <button class="pay-btn pay-apple" onclick="startPayment('apple')"> Pay الدفع عبر Apple Pay</button>
-      <button class="pay-btn pay-card" onclick="startPayment('card')">💳 بطاقة ائتمانية (Visa / Mastercard)</button>
-      <button class="pay-btn pay-mada" onclick="startPayment('mada')">🟢 الدفع عبر مدى</button>
-    </div>
-    <div class="pay-secure">🔒 الدفع يتم عبر بوابة Paymob الآمنة المرخّصة.</div>
+    <button class="btn btn-get" onclick="requestViaWhatsApp()">اطلب الحقيبة المخصصة وجدول الأنشطة عبر الواتساب 📩</button>
+    <div class="pay-secure">💬 سيفتح لديك تطبيق الواتساب لإتمام الطلب مع فريق الدعم.</div>
   </section>
 
   <!-- ============ SHARE ============ -->
@@ -601,6 +611,7 @@ const counts = {physical:0,visual:0,linguistic:0,social:0,focus:0,logical:0,crea
 const history = [];        // for back navigation
 let leadDone = false;
 let currency = "SAR";
+let lastResultSkill = "";
 
 const CUR = {
   SAR:{label:"ريال سعودي", price:15},
@@ -711,15 +722,21 @@ function submitLead(){
   answers.lead = {name, email, phone, consent, at:new Date().toISOString()};
 
   // Fire-and-forget POST to the Google Apps Script endpoint (does NOT block the UI).
+  // Field names match the Google Sheet column headers exactly.
   sendLead({
-    name, email, phone,
-    childGender: answers.gender || "",
-    childAge: answers.age || "",
-    leadingSkill: currentLeadingSkill(),
-    currency,
-    source: location.href,
-    at: answers.lead.at
+    Name: name,
+    Email: email,
+    WhatsApp: phone,
+    Child_Age: answers.age || "",
+    Dominant_Talent: currentLeadingSkill(),
+    // optional extra context columns
+    Child_Gender: answers.gender || "",
+    Currency: currency,
+    Source: location.href,
+    Timestamp: answers.lead.at
   });
+
+  track('lead_captured', { child_age: answers.age || "", dominant_talent: currentLeadingSkill() });
 
   leadDone = true;
   el('leadCard').classList.add('hidden');
@@ -765,10 +782,12 @@ function sendLead(payload){
        var data = JSON.parse(e.postData.contents);
        var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Leads")
                    || SpreadsheetApp.getActiveSpreadsheet().insertSheet("Leads");
+       // Make sure row 1 of the sheet has these exact headers:
+       // Timestamp | Name | Email | WhatsApp | Child_Age | Dominant_Talent | Child_Gender | Currency | Source
        sheet.appendRow([
-         new Date(), data.name, data.email, data.phone,
-         data.childGender, data.childAge, data.leadingSkill,
-         data.currency, data.source
+         new Date(), data.Name, data.Email, data.WhatsApp,
+         data.Child_Age, data.Dominant_Talent, data.Child_Gender,
+         data.Currency, data.Source
        ]);
        return ContentService.createTextOutput(JSON.stringify({ok:true}))
               .setMimeType(ContentService.MimeType.JSON);
@@ -820,10 +839,15 @@ function renderResult(){
   const gender = answers.gender;
   el('childRef').textContent = gender === 'أنثى' ? 'طفلتك' : 'طفلك';
 
+  lastResultSkill = TRAIT_INFO[ranked[0].cat].name;
+
   el('result').classList.remove('hidden');
   el('offer').classList.remove('hidden');
   el('share').classList.remove('hidden');
   el('result').classList.add('fade');
+
+  // GA4: user reached the final page that contains the WhatsApp order button
+  track('reached_checkout', { dominant_talent: lastResultSkill, currency: currency, value: CUR[currency].price });
 }
 
 /* ==================== CURRENCY ==================== */
@@ -848,32 +872,16 @@ el('curSelect').addEventListener('click', e=>{
   }
 })();
 
-/* ==================== PAYMENT (Paymob) ==================== */
-function startPayment(method){
-  /* =========================================================
-     // Paymob API Connection Gateway
-     // -------------------------------------------------------
-     // Replace the block below with your real Paymob flow:
-     //   1. Call your backend to create a Paymob order + payment key
-     //      using the selected `currency` and amount CUR[currency].price.
-     //   2. Pass the lead data (answers.lead) as billing/customer info.
-     //   3. Redirect the user to the Paymob iframe / checkout URL,
-     //      choosing the integration ID for the method:
-     //        - 'apple' -> Apple Pay integration ID
-     //        - 'card'  -> Card (Visa/Mastercard) integration ID
-     //        - 'mada'  -> mada integration ID
-     //
-     // Example (pseudocode):
-     //   const res = await fetch('/api/paymob/checkout', {
-     //     method:'POST',
-     //     headers:{'Content-Type':'application/json'},
-     //     body: JSON.stringify({ method, currency, amount: CUR[currency].price, lead: answers.lead })
-     //   });
-     //   const { checkoutUrl } = await res.json();
-     //   window.location.href = checkoutUrl;
-     ========================================================= */
+/* ==================== ORDER VIA WHATSAPP ==================== */
+// Lightweight, safe GA4 event helper
+function track(eventName, params){
+  try{ if(window.gtag) gtag('event', eventName, params || {}); }catch(e){}
+}
 
-  alert('سيتم توجيهك إلى بوابة الدفع الآمنة Paymob لإتمام الدفع.\n\n(ملاحظة للمطوّر: اربط هذا الزر بنقطة /api/paymob/checkout كما هو موضّح في التعليقات داخل الكود.)');
+function requestViaWhatsApp(){
+  track('order_click', {currency:currency, value:CUR[currency].price, skill: lastResultSkill});
+  const waUrl = "https://wa.me/447853501734?text=%D8%A3%D9%87%D9%84%D8%A7%D9%8B%20%D9%85%D8%B3%D8%AA%D8%B4%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B7%D9%81%D9%84%D8%8C%20%D9%82%D9%85%D8%AA%20%D8%A8%D8%A5%D8%AA%D9%85%D8%A7%D9%85%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%A8%D9%8A%D8%A7%D9%86%20%D9%88%D8%A2%D9%84%D8%A3%D9%86%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D1%84%D8%AD%D8%B5%D9%88%D9%84%20%D8%B9%D9%84%D9%8A%20%D8%AD%D9%82%D9%8A%D8%A8%D8%A9%20%D8%A7%D9%84%D9%8A%20%D8%A7%D9%84%D8%A3%D9%86%D8%B4%D8%B7%D8%A9%20%D8%A7%D9%84%D9%85%D8%AE%D8%B5%D8%B5%D8%A9%20%D9%84%D8%B7%D9%81%D9%84%D9%8A.";
+  window.open(waUrl, '_blank');
 }
 
 /* ==================== SHARE ==================== */
