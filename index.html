@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستشار استكشاف ميول ومهارات الطفل الذكي</title>
+<meta name="description" content="أداة استرشادية تفاعلية تساعد أولياء الأمور على ملاحظة ميول ومهارات أطفالهم في ثماني مجالات، مع دليل أنشطة منزلية بديلة للشاشات.">
+<meta name="theme-color" content="#020205">
+<meta property="og:title" content="مستشار استكشاف ميول ومهارات الطفل الذكي">
+<meta property="og:description" content="اكتشف المجالات التي ينجذب إليها طفلك عبر أداة استرشادية مبنية على نظرية الذكاءات المتعددة.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#020205;
+    --bg-2:#06060d;
+    --gold:#f59e0b;
+    --gold-soft:#fbbf24;
+    --violet:#8b5cf6;
+    --violet-soft:#a78bfa;
+    --green:#10b981;
+    --glass:rgba(15,23,42,0.40);
+    --glass-line:rgba(255,255,255,0.06);
+    --txt:#e9eaf2;
+    --txt-dim:#9aa0b4;
+    --radius:22px;
+    --maxw:680px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Tajawal',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--txt);
+    line-height:1.85;
+    min-height:100vh;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* atmospheric background */
+  body::before{
+    content:"";
+    position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(900px 520px at 85% -8%, rgba(139,92,246,0.16), transparent 60%),
+      radial-gradient(800px 480px at 8% 8%, rgba(245,158,11,0.10), transparent 60%),
+      radial-gradient(700px 700px at 50% 115%, rgba(16,185,129,0.07), transparent 60%),
+      var(--bg);
+  }
+  body::after{
+    content:"";
+    position:fixed;inset:0;z-index:-1;opacity:.35;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size:46px 46px;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 18px}
+  h1,h2,h3,.brand{font-family:'Readex Pro',sans-serif;letter-spacing:-.01em}
+
+  /* ---------- Brand / top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    backdrop-filter:blur(14px);
+    background:linear-gradient(180deg, rgba(2,2,5,.85), rgba(2,2,5,.35));
+    border-bottom:1px solid var(--glass-line);
+  }
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem}
+  .brand .dot{
+    width:34px;height:34px;border-radius:10px;flex:none;
+    background:radial-gradient(circle at 30% 30%, var(--gold-soft), var(--gold));
+    box-shadow:0 0 18px rgba(245,158,11,.55), inset 0 0 10px rgba(255,255,255,.35);
+    display:grid;place-items:center;color:#1a1300;font-weight:900;font-family:'Tajawal'
+  }
+  .brand small{display:block;font-family:'Tajawal';font-weight:500;font-size:.7rem;color:var(--txt-dim);letter-spacing:0}
+  .lang-flags{font-size:.8rem;color:var(--txt-dim)}
+
+  /* ---------- Progress bar ---------- */
+  .progress-shell{position:sticky;top:62px;z-index:35;padding:12px 0 0;background:linear-gradient(180deg,rgba(2,2,5,.9),transparent)}
+  .progress-track{height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid var(--glass-line)}
+  .progress-fill{height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--violet),var(--gold-soft));
+    box-shadow:0 0 14px rgba(139,92,246,.6);transition:width .5s cubic-bezier(.4,0,.2,1)}
+  .progress-meta{display:flex;justify-content:space-between;font-size:.74rem;color:var(--txt-dim);margin-top:7px}
+
+  /* ---------- Glass cards ---------- */
+  .glass{
+    background:var(--glass);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-line);
+    border-radius:var(--radius);
+    box-shadow:0 24px 60px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  section{padding:30px 0}
+  .fade{animation:fade .45s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- Hero / intro ---------- */
+  .hero{padding:42px 22px 30px;text-align:center}
+  .pill{display:inline-flex;gap:8px;align-items:center;font-size:.78rem;color:var(--violet-soft);
+    border:1px solid rgba(139,92,246,.35);background:rgba(139,92,246,.08);padding:6px 14px;border-radius:99px;margin-bottom:18px}
+  .hero h1{font-size:1.95rem;line-height:1.4;font-weight:700;margin-bottom:14px}
+  .hero h1 .g{color:var(--gold-soft);text-shadow:0 0 22px rgba(245,158,11,.45)}
+  .hero p{color:var(--txt-dim);font-size:1.02rem;max-width:540px;margin:0 auto 22px}
+  .disclaimer-chip{display:inline-block;font-size:.76rem;color:var(--txt-dim);
+    border:1px dashed rgba(255,255,255,.14);border-radius:12px;padding:9px 14px;margin-bottom:24px;max-width:560px}
+  .meta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+  .meta-row .m{font-size:.78rem;color:var(--txt-dim)}
+  .meta-row .m b{color:var(--green);font-weight:700}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;border:none;
+    font-family:'Tajawal';font-weight:700;font-size:1.02rem;padding:15px 26px;border-radius:16px;
+    transition:transform .18s ease, box-shadow .25s ease, background .25s ease;width:100%;color:#fff}
+  .btn-primary{background:linear-gradient(135deg,var(--violet),#6d28d9);
+    box-shadow:0 10px 30px rgba(139,92,246,.4), inset 0 1px 0 rgba(255,255,255,.2)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(139,92,246,.55)}
+  .btn-gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#1a1300;
+    box-shadow:0 10px 30px rgba(245,158,11,.4)}
+  .btn-gold:hover{transform:translateY(-2px)}
+  .btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--glass-line)}
+  .btn-wa{background:linear-gradient(135deg,#1ed760,#0f9d58);box-shadow:0 0 24px rgba(16,185,129,.5)}
+  .btn-wa:hover{transform:translateY(-2px)}
+
+  /* ---------- Quiz ---------- */
+  #quizCard{padding:26px 22px}
+  .q-section-tag{font-size:.76rem;color:var(--gold-soft);font-weight:700;margin-bottom:8px;letter-spacing:.02em}
+  .q-text{font-family:'Readex Pro';font-size:1.32rem;font-weight:600;line-height:1.55;margin-bottom:22px}
+  .options{display:flex;flex-direction:column;gap:12px}
+  .opt{display:flex;align-items:center;gap:12px;text-align:right;cursor:pointer;
+    background:rgba(255,255,255,.03);border:1px solid var(--glass-line);border-radius:15px;padding:15px 17px;
+    font-size:1.02rem;color:var(--txt);transition:all .2s ease;font-family:'Tajawal';width:100%;font-weight:500}
+  .opt:hover{border-color:rgba(139,92,246,.55);background:rgba(139,92,246,.10);transform:translateX(-3px)}
+  .opt .tick{width:22px;height:22px;border-radius:7px;border:2px solid rgba(255,255,255,.2);flex:none;transition:all .2s}
+  .opt:hover .tick{border-color:var(--violet);box-shadow:0 0 12px rgba(139,92,246,.5)}
+  .q-back{margin-top:18px;background:none;border:none;color:var(--txt-dim);font-family:'Tajawal';
+    font-size:.86rem;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .q-back:hover{color:var(--txt)}
+
+  /* ---------- Lead capture ---------- */
+  .lead{padding:30px 24px;text-align:center}
+  .lead .crown{font-size:2.2rem;margin-bottom:6px;filter:drop-shadow(0 0 16px rgba(245,158,11,.6))}
+  .lead h2{font-size:1.4rem;margin-bottom:10px}
+  .lead p{color:var(--txt-dim);font-size:.96rem;margin-bottom:22px}
+  .field{text-align:right;margin-bottom:14px}
+  .field label{display:block;font-size:.84rem;color:var(--txt-dim);margin-bottom:7px;font-weight:500}
+  .field input,.field select{width:100%;padding:14px 15px;border-radius:13px;font-family:'Tajawal';font-size:1rem;
+    background:rgba(255,255,255,.04);border:1px solid var(--glass-line);color:var(--txt);outline:none;transition:border .2s}
+  .field input:focus,.field select:focus{border-color:var(--violet)}
+  .field .err{color:#f87171;font-size:.78rem;margin-top:5px;display:none}
+  .consent{display:flex;gap:9px;align-items:flex-start;text-align:right;font-size:.8rem;color:var(--txt-dim);margin:6px 0 18px}
+  .consent input{margin-top:4px}
+  .consent a{color:var(--violet-soft);text-decoration:underline;cursor:pointer}
+
+  /* ---------- Processing ---------- */
+  #processing{padding:50px 24px;text-align:center}
+  .scanbox{position:relative;width:130px;height:130px;margin:0 auto 22px;border-radius:50%;
+    border:2px solid rgba(139,92,246,.25);display:grid;place-items:center;overflow:hidden}
+  .scanbox .core{font-size:2.2rem}
+  .scanline{position:absolute;left:0;right:0;height:3px;top:0;
+    background:linear-gradient(90deg,transparent,var(--violet-soft),transparent);
+    box-shadow:0 0 16px var(--violet);animation:scan 1.5s ease-in-out infinite}
+  @keyframes scan{0%{top:6%}50%{top:94%}100%{top:6%}}
+  #processing h2{font-size:1.2rem;margin-bottom:8px}
+  #processing p{color:var(--txt-dim);font-size:.9rem}
+
+  /* ---------- Result ---------- */
+  #result{padding:28px 22px}
+  .result-head{text-align:center;margin-bottom:22px}
+  .result-head .badge{font-size:.78rem;color:var(--green);border:1px solid rgba(16,185,129,.35);
+    background:rgba(16,185,129,.08);padding:5px 13px;border-radius:99px;display:inline-block;margin-bottom:12px}
+  .result-head h2{font-size:1.5rem}
+  .result-head .for{color:var(--gold-soft);font-weight:700}
+  .trait{background:rgba(255,255,255,.03);border:1px solid var(--glass-line);border-radius:16px;padding:17px;margin-bottom:13px}
+  .trait .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .trait .name{font-family:'Readex Pro';font-weight:600;font-size:1.05rem}
+  .trait .pct{font-size:.82rem;color:var(--gold-soft);font-weight:700}
+  .trait .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-bottom:9px}
+  .trait .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--violet))}
+  .trait .desc{font-size:.9rem;color:var(--txt-dim);line-height:1.7}
+  .result-note{font-size:.8rem;color:var(--txt-dim);text-align:center;border:1px dashed rgba(255,255,255,.14);
+    border-radius:13px;padding:12px;margin:18px 0}
+
+  /* ---------- Offer / payment ---------- */
+  .offer{padding:26px 22px;margin-top:18px;position:relative;overflow:hidden}
+  .offer::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(400px 200px at 80% 0%, rgba(245,158,11,.14), transparent 60%);pointer-events:none}
+  .offer h3{font-size:1.3rem;margin-bottom:6px}
+  .offer .sub{color:var(--txt-dim);font-size:.92rem;margin-bottom:18px}
+  .includes{list-style:none;margin-bottom:20px}
+  .includes li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.96rem}
+  .includes li .c{color:var(--green);flex:none;font-weight:900}
+  .price-row{display:flex;align-items:baseline;gap:10px;justify-content:center;margin-bottom:4px}
+  .price{font-family:'Readex Pro';font-size:2.4rem;font-weight:700;color:var(--gold-soft);text-shadow:0 0 20px rgba(245,158,11,.4)}
+  .price small{font-size:1rem;color:var(--txt-dim);font-weight:400}
+  .price-note{text-align:center;color:var(--txt-dim);font-size:.8rem;margin-bottom:18px}
+  .cur-select{display:flex;gap:8px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+  .cur-select button{font-family:'Tajawal';cursor:pointer;background:rgba(255,255,255,.04);border:1px solid var(--glass-line);
+    color:var(--txt-dim);padding:7px 14px;border-radius:11px;font-size:.84rem;transition:all .2s}
+  .cur-select button.active{border-color:var(--gold);color:var(--gold-soft);background:rgba(245,158,11,.1)}
+  .pay-methods{display:flex;flex-direction:column;gap:11px}
+  .pay-btn{display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;width:100%;
+    padding:15px;border-radius:14px;font-family:'Tajawal';font-weight:700;font-size:1rem;border:1px solid var(--glass-line);transition:transform .18s}
+  .pay-btn:hover{transform:translateY(-2px)}
+  .pay-apple{background:#000;color:#fff;border-color:rgba(255,255,255,.18)}
+  .pay-card{background:linear-gradient(135deg,var(--violet),#6d28d9);color:#fff;border:none}
+  .pay-mada{background:rgba(255,255,255,.05);color:var(--txt)}
+  .pay-secure{text-align:center;font-size:.78rem;color:var(--txt-dim);margin-top:14px;display:flex;gap:6px;align-items:center;justify-content:center}
+
+  /* ---------- Share ---------- */
+  .share{padding:24px 22px;text-align:center;margin-top:18px}
+  .share h3{font-size:1.12rem;margin-bottom:6px}
+  .share p{color:var(--txt-dim);font-size:.88rem;margin-bottom:16px}
+
+  /* ---------- Ad slots ---------- */
+  .ad-slot{max-width:var(--maxw);margin:22px auto;padding:0 18px}
+  .ad-inner{border:1px dashed rgba(255,255,255,.12);border-radius:14px;min-height:90px;display:grid;place-items:center;
+    color:var(--txt-dim);font-size:.74rem;background:rgba(255,255,255,.015)}
+  /* slim banner variant for in-quiz ads so the question fits the first screen without scrolling */
+  .ad-slot.ad-thin{margin:8px auto}
+  .ad-slot.ad-thin .ad-inner{min-height:46px;border-radius:10px;font-size:.68rem}
+
+  /* ---------- FAQ / SEO content ---------- */
+  .article{padding:30px 22px;margin-top:24px}
+  .article h2{font-size:1.5rem;margin-bottom:8px;text-align:center}
+  .article .lede{color:var(--txt-dim);text-align:center;font-size:.95rem;margin-bottom:26px}
+  .faq-item{border-bottom:1px solid var(--glass-line);padding:16px 0}
+  .faq-item h3{font-size:1.06rem;color:var(--gold-soft);margin-bottom:8px;font-weight:600}
+  .faq-item p{color:var(--txt-dim);font-size:.96rem}
+  .article p{margin-bottom:12px}
+
+  /* ---------- Footer ---------- */
+  footer{margin-top:34px;border-top:1px solid var(--glass-line);padding:26px 0 40px;text-align:center}
+  .foot-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+  .foot-links button{background:none;border:none;color:var(--txt-dim);font-family:'Tajawal';font-size:.86rem;cursor:pointer}
+  .foot-links button:hover{color:var(--gold-soft)}
+  footer .cr{font-size:.78rem;color:#5b6072}
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:90;
+    display:none;align-items:center;justify-content:center;padding:18px}
+  .modal-overlay.open{display:flex;animation:fade .3s ease}
+  .modal{max-width:560px;width:100%;max-height:82vh;overflow-y:auto;padding:26px 24px}
+  .modal h3{font-size:1.25rem;margin-bottom:14px;color:var(--gold-soft)}
+  .modal p{color:var(--txt-dim);font-size:.92rem;margin-bottom:11px}
+  .modal h4{font-size:1rem;margin:14px 0 6px}
+  .modal .close{position:sticky;top:0;float:left;background:rgba(255,255,255,.06);border:1px solid var(--glass-line);
+    color:var(--txt);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:1.1rem}
+
+  .hidden{display:none !important}
+  @media(max-width:520px){
+    .hero h1{font-size:1.6rem}
+    .q-text{font-size:1.15rem}
+    .price{font-size:2rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <span class="dot">ذ</span>
+      <span>مستشار ميول الطفل الذكي
+        <small>أداة استرشادية لأولياء الأمور</small>
+      </span>
+    </div>
+    <span class="lang-flags">🇸🇦 🇦🇪 🇶🇦</span>
+  </div>
+</header>
+
+<!-- Progress bar (hidden until quiz starts) -->
+<div class="progress-shell hidden" id="progressShell">
+  <div class="wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<!-- Responsive AdSense Space #1 (below progress / top of content) -->
+<div class="ad-slot ad-thin">
+  <!-- Responsive AdSense Space -->
+  <div class="ad-inner">مساحة إعلانية متجاوبة (AdSense)</div>
+</div>
+
+<main class="wrap">
+
+  <!-- ============ HERO / INTRO ============ -->
+  <section id="intro" class="glass hero fade">
+    <span class="pill">✦ مبني على نظرية الذكاءات المتعددة</span>
+    <h1>اكتشف <span class="g">المجالات التي ينجذب إليها</span> طفلك خلال دقائق</h1>
+    <p>أجب عن ٣٢ سؤالاً قصيراً حول سلوك طفلك اليومي، لتحصل على ملخّص استرشادي يساعدك على ملاحظة ميوله ومهاراته، مع اقتراحات أنشطة منزلية تنمّي اهتماماته بعيداً عن الشاشات.</p>
+    <div class="disclaimer-chip">
+      ⚠️ هذه الأداة <b>استرشادية وتوعوية</b> تعكس ملاحظاتك أنت كولي أمر، وهي ليست تقييماً طبياً أو نفسياً ولا تُغني عن استشارة المختصين.
+    </div>
+    <div style="max-width:420px;margin:0 auto">
+      <button class="btn btn-primary" onclick="startQuiz()">ابدأ الاستبيان المجاني ✨</button>
+    </div>
+    <div class="meta-row">
+      <span class="m">⏱ يستغرق <b>أقل من ٣ دقائق</b></span>
+      <span class="m">🔒 بياناتك <b>محمية</b></span>
+      <span class="m">📋 <b>٣٢</b> سؤالاً</span>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ CARD ============ -->
+  <section id="quizCard" class="glass hidden">
+    <div class="q-section-tag" id="qSectionTag"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="qOptions"></div>
+    <button class="q-back hidden" id="qBack" onclick="goBack()">→ رجوع للسؤال السابق</button>
+  </section>
+
+  <!-- Responsive AdSense Space #2 (mid-content) -->
+  <div class="ad-slot ad-thin hidden" id="adMid">
+    <!-- Responsive AdSense Space -->
+    <div class="ad-inner">مساحة إعلانية متجاوبة (AdSense)</div>
+  </div>
+
+  <!-- ============ LEAD CAPTURE (after Q19) ============ -->
+  <section id="leadCard" class="glass lead hidden">
+    <div class="crown">👑</div>
+    <h2>أحسنت! أنت في منتصف الطريق</h2>
+    <p>الإجابات حتى الآن تساعدنا على تكوين صورة أولية عن ميول طفلك. أدخل بياناتك لنحفظ تقدّمك ونرسل لك نسخة من الملخّص قبل المتابعة للقسم الأخير.</p>
+
+    <div class="field">
+      <label>اسم ولي الأمر</label>
+      <input type="text" id="leadName" placeholder="مثال: نورة المهنا" autocomplete="name">
+      <div class="err" id="errName">الرجاء إدخال الاسم.</div>
+    </div>
+    <div class="field">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="leadEmail" placeholder="name@example.com" autocomplete="email">
+      <div class="err" id="errEmail">الرجاء إدخال بريد إلكتروني صحيح.</div>
+    </div>
+    <div class="field">
+      <label>رقم الواتساب (بالرمز الدولي)</label>
+      <input type="tel" id="leadPhone" placeholder="مثال: ‎+966 5XXXXXXXX" autocomplete="tel">
+      <div class="err" id="errPhone">الرجاء إدخال رقم صحيح يبدأ بالرمز الدولي.</div>
+    </div>
+
+    <label class="consent">
+      <input type="checkbox" id="leadConsent">
+      <span>أوافق على معالجة بياناتي لإرسال الملخّص والعروض ذات الصلة وفق
+        <a onclick="openModal('privacy')">سياسة الخصوصية</a>.</span>
+    </label>
+    <div class="err" id="errConsent" style="text-align:right">الرجاء الموافقة للمتابعة.</div>
+
+    <button class="btn btn-gold" onclick="submitLead()">حفظ والمتابعة للقسم الأخير ←</button>
+    <p style="font-size:.76rem;margin-top:12px;margin-bottom:0">يمكنك المتابعة دون رغبتك في تلقّي العروض؛ بياناتك لن تُباع لأي طرف ثالث.</p>
+  </section>
+
+  <!-- ============ PROCESSING ============ -->
+  <section id="processing" class="glass hidden">
+    <div class="scanbox">
+      <div class="scanline"></div>
+      <div class="core">🧠</div>
+    </div>
+    <h2>جاري تحضير ملخّص ميول طفلك…</h2>
+    <p>نحسب توزيع إجاباتك على المجالات الثمانية.</p>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="result" class="hidden">
+    <div class="glass" style="padding:24px 22px">
+      <div class="result-head">
+        <span class="badge">✓ اكتمل الملخّص الاسترشادي</span>
+        <h2>أبرز المجالات التي يبدو أن <span class="for" id="childRef">طفلك</span> ينجذب إليها</h2>
+      </div>
+      <div id="traits"></div>
+      <div class="result-note">
+        هذه النتيجة تلخّص ما لاحظتَه أنت عن طفلك وتُبرز اهتماماته الظاهرة فقط — وهي نقطة انطلاق للملاحظة والتشجيع،
+        وليست تشخيصاً للذكاء أو قياساً علمياً دقيقاً. كل طفل يتطوّر بوتيرته الخاصة.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OFFER / PAYMENT ============ -->
+  <section id="offer" class="glass offer hidden">
+    <h3>حقيبة الأنشطة المنزلية المتكاملة 🎒</h3>
+    <p class="sub">ملف PDF عملي صُمّم لمساعدتك على استثمار ميول طفلك بأنشطة بديلة للشاشات.</p>
+    <ul class="includes">
+      <li><span class="c">✓</span><span>ملخّص ميول طفلك في المجالات الثمانية بصيغة قابلة للطباعة.</span></li>
+      <li><span class="c">✓</span><span>جدول أنشطة منزلية أسبوعية بديلة للشاشات مرتّبة حسب الفئة العمرية.</span></li>
+      <li><span class="c">✓</span><span>دليل عملي للتعامل مع العناد ونوبات الغضب بأسلوب هادئ وداعم.</span></li>
+      <li><span class="c">✓</span><span>أفكار ألعاب تنمّي المهارات الحركية واللغوية والمنطقية.</span></li>
+    </ul>
+
+    <div class="cur-select" id="curSelect">
+      <button data-cur="SAR" class="active">🇸🇦 ريال سعودي</button>
+      <button data-cur="AED">🇦🇪 درهم إماراتي</button>
+      <button data-cur="QAR">🇶🇦 ريال قطري</button>
+    </div>
+
+    <div class="price-row">
+      <span class="price"><span id="priceVal">15</span> <small id="priceCur">ريال سعودي</small></span>
+    </div>
+    <p class="price-note">دفعة واحدة — تحميل فوري بعد إتمام الدفع.</p>
+
+    <div class="pay-methods">
+      <button class="pay-btn pay-apple" onclick="startPayment('apple')"> Pay الدفع عبر Apple Pay</button>
+      <button class="pay-btn pay-card" onclick="startPayment('card')">💳 بطاقة ائتمانية (Visa / Mastercard)</button>
+      <button class="pay-btn pay-mada" onclick="startPayment('mada')">🟢 الدفع عبر مدى</button>
+    </div>
+    <div class="pay-secure">🔒 الدفع يتم عبر بوابة Paymob الآمنة المرخّصة.</div>
+  </section>
+
+  <!-- ============ SHARE ============ -->
+  <section id="share" class="glass share hidden">
+    <h3>شاركيه مع أمهات أخريات 💚</h3>
+    <p>ساعدي صديقاتك على اكتشاف ميول أطفالهن أيضاً.</p>
+    <button class="btn btn-wa" onclick="shareWhatsApp()">📲 المشاركة عبر واتساب</button>
+  </section>
+
+</main>
+
+<!-- Responsive AdSense Space #3 (footer area) -->
+<div class="ad-slot">
+  <!-- Responsive AdSense Space -->
+  <div class="ad-inner">مساحة إعلانية متجاوبة (AdSense)</div>
+</div>
+
+<!-- ============ FAQ / SEO ARTICLE ============ -->
+<div class="wrap">
+<article class="glass article">
+  <h2>دليل التربية الحديثة وتنمية مهارات الأطفال</h2>
+  <p class="lede">إجابات عملية لأكثر أسئلة أولياء الأمور تكراراً حول اكتشاف ميول الطفل وتنمية مهاراته.</p>
+
+  <div class="faq-item">
+    <h3>ما المقصود بـ«الذكاءات المتعددة»، وهل لكل طفل ذكاء واحد فقط؟</h3>
+    <p>نظرية الذكاءات المتعددة التي طرحها عالم النفس التربوي هوارد جاردنر تقترح أن قدرات الإنسان لا تُختزل في رقمٍ واحد لمعدّل الذكاء، بل تتوزّع على مجالات متعددة مثل اللغوي والمنطقي–الرياضي والبصري–المكاني والحركي والاجتماعي والعاطفي. الفكرة الجوهرية أن كل طفل يملك مزيجاً فريداً من هذه المجالات، وأن وجود ميل أقوى في مجال لا يعني ضعفاً في غيره. لذلك فإن هدف أي أداة استرشادية ليس تصنيف الطفل في خانة واحدة، بل مساعدة الأهل على ملاحظة المجالات التي يستمتع بها الطفل ويبذل فيها جهداً تلقائياً، ثم توفير فرص أكثر للتعبير عنها.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>هل يمكن أن يكتشف استبيان من ٣٢ سؤالاً موهبة طفلي بدقة؟</h3>
+    <p>لا، ولا ينبغي لأي استبيان قصير أن يدّعي ذلك. الاستبيان أداة لتنظيم ملاحظاتك أنت كولي أمر؛ فالإجابات تعكس انطباعك عن سلوك طفلك في حياته اليومية. قيمته الحقيقية تكمن في أنه يوجّه انتباهك نحو أنماط قد لا تلاحظها وسط زحام اليوم — مثل أن الطفل يميل دائماً إلى الفكّ والتركيب، أو أنه يستمتع بالقصص أكثر من الحركة. أما القياس الدقيق للقدرات فيحتاج إلى ملاحظة طويلة المدى ومتخصصين في تقييم الطفولة المبكرة. اعتبر النتيجة بداية حوار، لا حكماً نهائياً.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>كم من الوقت يُسمح للطفل بقضائه أمام الشاشات؟</h3>
+    <p>تتفق معظم الإرشادات الصحية على أن الأطفال دون العامين يُفضَّل ألا يتعرّضوا للشاشات إلا للمكالمات المرئية، وأن الأطفال من ٢ إلى ٥ سنوات يكتفون بساعة واحدة من محتوى تعليمي هادف بمشاركة أحد الوالدين. أما الأكبر فالأهم من الرقم هو نوعية المحتوى وتوازنه مع النوم والنشاط البدني واللعب الحر. حين تقلّ ساعات الشاشة تظهر لدى كثير من الأطفال طاقة للّعب التخيّلي والقراءة والأنشطة اليدوية. والمفتاح ليس المنع المفاجئ بل توفير بدائل ممتعة تجعل الطفل لا يشعر بالحرمان.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>كيف أتعامل مع عناد طفلي ونوبات غضبه دون صراع يومي؟</h3>
+    <p>العناد في الطفولة المبكرة غالباً تعبير طبيعي عن رغبة الطفل في الاستقلال واختبار حدوده، وليس تمرّداً مقصوداً. يساعد كثيراً أن تمنح الطفل خيارات محدودة ضمن إطارك («تلبس الأزرق أم الأحمر؟») بدل الأوامر المباشرة، وأن تسمّي مشاعره بصوتٍ هادئ («أراك غاضباً لأن وقت اللعب انتهى») لأن تسمية الشعور تخفّف حدّته. تجنّب التفاوض أثناء ذروة الانفعال، وانتظر الهدوء قبل الحديث. والثبات في القواعد مع الدفء في العلاقة هو ما يبني لدى الطفل شعوراً بالأمان على المدى الطويل.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>ما أبسط الأنشطة المنزلية التي تنمّي مهارات طفلي دون تكلفة؟</h3>
+    <p>كثير من أقوى الأنشطة لا يحتاج إلى أدوات مكلفة. اللعب بالمكعبات وأكواب المطبخ ينمّي المهارة البصرية–المكانية، وسرد قصة بالتناوب جملةً جملةً ينمّي اللغة والخيال، وفرز الأزرار أو الحبوب حسب اللون والحجم يبني التفكير المنطقي، والقفز والرقص ولعب «الغمّيضة» يطوّر التوازن والمهارات الحركية. خصّص يومياً عشرين دقيقة من اللعب الموجّه دون شاشة، وراقب أيّ نشاط يجذب طفلك أكثر؛ هذا الانجذاب نفسه هو دليلك الأوضح إلى ميوله.</p>
+  </div>
+
+  <div class="faq-item">
+    <h3>متى يجب أن ألجأ إلى مختص بدل الاكتفاء بالأدوات الاسترشادية؟</h3>
+    <p>الأدوات الاسترشادية مفيدة للملاحظة والتشجيع، لكنها لا تحل محل التقييم المتخصص. يُنصح باستشارة طبيب الأطفال أو أخصائي نطق أو أخصائي نفسي للطفل إذا لاحظت تأخراً واضحاً في الكلام أو الحركة مقارنة بأقران الطفل، أو انسحاباً اجتماعياً شديداً، أو صعوبات في النوم أو التركيز تؤثر في حياته اليومية. طلب الاستشارة المبكرة ليس مدعاة للقلق بل خطوة واعية؛ فالتدخل المبكر غالباً يحقق أفضل النتائج. ثق بحدسك كوالد، فأنت أكثر من يعرف طفلك.</p>
+  </div>
+
+  <p style="margin-top:18px;color:var(--txt-dim);font-size:.9rem">تذكّر دائماً أن كل طفل ينمو وفق إيقاعه الخاص، وأن المقارنة بالأقران قد تضرّ أكثر مما تنفع. دورك الأهم هو توفير بيئة آمنة ومحبّة تتيح لطفلك أن يجرّب ويخطئ ويكتشف. الأنشطة والأدوات وسائل مساعدة، أما العلاقة الدافئة والحضور الحقيقي فهي أساس أي نموٍّ سليم.</p>
+</article>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <button onclick="openModal('privacy')">سياسة الخصوصية</button>
+      <button onclick="openModal('terms')">شروط الخدمة</button>
+      <button onclick="openModal('disclaimer')">إخلاء المسؤولية الاسترشادي</button>
+    </div>
+    <div class="cr">© <span id="year"></span> مستشار ميول الطفل الذكي — أداة توعوية استرشادية لأولياء الأمور.</div>
+  </div>
+</footer>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="glass modal" id="modalBox">
+    <button class="close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ====================================================================
+   DATA — 32 questions. category: which intelligence area the answer scores.
+   demographic questions (gender/age/relation) are stored, not scored.
+   For scored questions, option.v = points (0,1,2).
+==================================================================== */
+const SECTIONS = {
+  basic:"القسم الأول · البيانات الأساسية",
+  physical:"القسم الثاني · المهارات الحركية والبدنية",
+  visual:"القسم الثالث · المهارات البصرية والمكانية",
+  linguistic:"القسم الرابع · المهارات اللغوية والتعبيرية",
+  social:"القسم الخامس · المهارات الاجتماعية والعاطفية",
+  focus:"القسم السادس · التركيز والسلوك الرقمي",
+  logical:"القسم السابع · المهارات المنطقية والرياضية",
+  creative:"القسم الثامن · المهارات الإبداعية والخاصة"
+};
+
+const SCALE = [
+  {t:"نعم، بوضوح", v:2},
+  {t:"إلى حدٍّ ما", v:1},
+  {t:"نادراً", v:0}
+];
+
+const QUESTIONS = [
+  // --- basic ---
+  {s:"basic", cat:"demo", key:"gender", q:"ما جنس الطفل؟",
+    o:[{t:"ذكر",val:"ذكر"},{t:"أنثى",val:"أنثى"}]},
+  {s:"basic", cat:"demo", key:"age", q:"ما الفئة العمرية للطفل؟",
+    o:[{t:"٣ – ٥ سنوات",val:"3-5"},{t:"٦ – ٨ سنوات",val:"6-8"},{t:"٩ – ١٢ سنة",val:"9-12"}]},
+  {s:"basic", cat:"demo", key:"relation", q:"ما صلة قرابتك بالطفل؟",
+    o:[{t:"الأم",val:"الأم"},{t:"الأب",val:"الأب"},{t:"عائل آخر",val:"عائل آخر"}]},
+
+  // --- physical ---
+  {s:"physical", cat:"physical", q:"هل يفضّل الطفل الألعاب الحركية على الجلوس الطويل؟",
+    o:[{t:"يفضّل الحركة دائماً",v:2},{t:"يوازن بينهما",v:1},{t:"يفضّل الجلوس",v:0}]},
+  {s:"physical", cat:"physical", q:"كيف تصف مهارته في فك وتركيب الألعاب الدقيقة؟", o:SCALE},
+  {s:"physical", cat:"physical", q:"هل تلاحظ توازنه الجسدي الجيد أثناء الجري السريع؟", o:SCALE},
+  {s:"physical", cat:"physical", q:"هل يتعلّم الحركات الرياضية الجديدة بسرعة؟", o:SCALE},
+
+  // --- visual ---
+  {s:"visual", cat:"visual", q:"هل ينجذب للألوان والرسومات بشكل لافت؟", o:SCALE},
+  {s:"visual", cat:"visual", q:"هل يتذكّر تفاصيل الأماكن التي زارها مرة واحدة؟", o:SCALE},
+  {s:"visual", cat:"visual", q:"كيف تصف قدرته على حل المتاهات والـ Puzzles؟",
+    o:[{t:"يحلّها بسهولة واستمتاع",v:2},{t:"يحلّها بمساعدة",v:1},{t:"لا يميل إليها",v:0}]},
+  {s:"visual", cat:"visual", q:"هل يحب البناء بالمكعبات وتشكيل مجسّمات معقّدة؟", o:SCALE},
+
+  // --- linguistic ---
+  {s:"linguistic", cat:"linguistic", q:"هل نطقه للكلمات ومخارج حروفه سليمة مقارنة بعمره؟", o:SCALE},
+  {s:"linguistic", cat:"linguistic", q:"هل يستمتع بسماع القصص والحكايات؟", o:SCALE},
+  {s:"linguistic", cat:"linguistic", q:"هل يبتكر قصصاً خيالية من نسج خياله؟", o:SCALE},
+  {s:"linguistic", cat:"linguistic", q:"هل يحفظ الأناشيد أو الكلمات الجديدة بسرعة؟", o:SCALE},
+
+  // --- social ---
+  {s:"social", cat:"social", q:"كيف يتصرّف عند الاختلاط بأطفال جدد؟",
+    o:[{t:"مبادر ومندمج بسرعة",v:2},{t:"خجول ثم يندمج",v:1},{t:"يفضّل الانعزال",v:0}]},
+  {s:"social", cat:"social", q:"هل يلاحظ مشاعر الحزن أو الفرح على وجهك؟", o:SCALE},
+  {s:"social", cat:"social", q:"هل يعبّر عن غضبه وإحباطه بطريقة يمكن فهمها؟", o:SCALE},
+  {s:"social", cat:"social", q:"هل يشارك ألعابه مع الآخرين بسهولة؟", o:SCALE},
+
+  // === LEAD CAPTURE inserted after this (index 18, i.e. after Q19) ===
+
+  // --- focus ---
+  {s:"focus", cat:"focus", q:"كم ساعة يقضيها الطفل أمام الشاشات يومياً تقريباً؟",
+    o:[{t:"أقل من ساعة",v:2},{t:"من ١ إلى ٣ ساعات",v:1},{t:"أكثر من ٣ ساعات",v:0}]},
+  {s:"focus", cat:"focus", q:"هل يحافظ على انتباهه أثناء الحديث معه دون تشتّت سريع؟", o:SCALE},
+  {s:"focus", cat:"focus", q:"هل يتقبّل سحب الأجهزة منه بهدوء نسبي؟",
+    o:[{t:"نعم بهدوء",v:2},{t:"يحتاج تمهيداً",v:1},{t:"يرفض بشدّة",v:0}]},
+  {s:"focus", cat:"focus", q:"هل يطرح أسئلة فضولية عميقة تسبق سنّه؟", o:SCALE},
+
+  // --- logical ---
+  {s:"logical", cat:"logical", q:"هل ينجذب لعدّ الأشياء ومقارنة الأحجام والكميات؟", o:SCALE},
+  {s:"logical", cat:"logical", q:"هل يفهم مفهوم الوقت وترتيب أحداث اليوم؟", o:SCALE},
+  {s:"logical", cat:"logical", q:"كيف يتعامل مع المشكلات الصغيرة التي تواجهه؟",
+    o:[{t:"يبحث عن حلول بنفسه",v:2},{t:"يطلب المساعدة",v:1},{t:"يستسلم بسرعة",v:0}]},
+  {s:"logical", cat:"logical", q:"هل يلاحظ الفروق الدقيقة بين الأشياء المتشابهة؟", o:SCALE},
+
+  // --- creative ---
+  {s:"creative", cat:"creative", q:"في أي مجال تظهر موهبته بوضوح أكبر؟",
+    o:[{t:"الرسم والتلوين",v:2},{t:"الابتكار والتفكيك",v:2},{t:"لم تتّضح بعد",v:0}]},
+  {s:"creative", cat:"creative", q:"كيف ينام الطفل عادةً؟",
+    o:[{t:"نوم عميق مستقر",v:2},{t:"متوسط",v:1},{t:"متقطّع وكثير الحركة",v:0}]},
+  {s:"creative", cat:"creative", q:"هل يقلّد حركات وأصوات الآخرين بدقة وطرافة؟", o:SCALE},
+  {s:"creative", cat:"creative", q:"هل تشعر داخلياً أن طفلك يملك ميلاً فريداً يحتاج لتوجيه؟", o:SCALE}
+];
+
+const LEAD_AFTER_INDEX = 18; // show lead card after question index 18 (the 19th question)
+
+// Section order/labels (1..8) — shown softly on the card instead of raw question numbers
+const SECTION_META = {
+  basic:{n:"١", name:"البيانات الأساسية"},
+  physical:{n:"٢", name:"المهارات الحركية والبدنية"},
+  visual:{n:"٣", name:"المهارات البصرية والمكانية"},
+  linguistic:{n:"٤", name:"المهارات اللغوية والتعبيرية"},
+  social:{n:"٥", name:"المهارات الاجتماعية والعاطفية"},
+  focus:{n:"٦", name:"التركيز والسلوك الرقمي"},
+  logical:{n:"٧", name:"المهارات المنطقية والرياضية"},
+  creative:{n:"٨", name:"المهارات الإبداعية والخاصة"}
+};
+
+// Google Apps Script Web App endpoint (deployed as "Anyone") that writes leads to your Google Sheet
+const LEAD_ENDPOINT = "https://script.google.com/macros/s/AKfycbw-mV611DhAGfuM2ihr69arO_7rErOeBfFNM79tbgikvQCUbb-a0hbkU4z-7VjAlWjC/exec";
+
+const TRAIT_INFO = {
+  physical:{name:"المهارات الحركية والبدنية", desc:"يبدو أن طفلك يتعلّم ويعبّر عن نفسه عبر الحركة واللمس. شجّعه بالرياضة والرقص وأنشطة الفك والتركيب."},
+  visual:{name:"المهارات البصرية والمكانية", desc:"يبدو أن طفلك ينتبه للصور والأشكال والتفاصيل المكانية. وفّر له المكعبات والرسم والمتاهات وألعاب البناء."},
+  linguistic:{name:"المهارات اللغوية والتعبيرية", desc:"يبدو أن طفلك ينجذب للكلمات والقصص والتعبير. أكثر من القراءة معه وسرد القصص بالتناوب وتأليف الحكايات."},
+  social:{name:"المهارات الاجتماعية والعاطفية", desc:"يبدو أن طفلك حسّاس لمشاعر من حوله ويميل للتفاعل. وفّر له اللعب الجماعي والأدوار التمثيلية والحديث عن المشاعر."},
+  focus:{name:"التركيز والفضول المعرفي", desc:"يبدو أن طفلك يحافظ على انتباهه ويطرح أسئلة فضولية. غذِّ فضوله بالأسئلة المفتوحة والتجارب البسيطة وتقليل المشتتات."},
+  logical:{name:"المهارات المنطقية والرياضية", desc:"يبدو أن طفلك يستمتع بالأنماط والأرقام وحل المشكلات. وفّر له ألعاب الفرز والعدّ والألغاز والتفكير خطوة بخطوة."},
+  creative:{name:"المهارات الإبداعية والخاصة", desc:"يبدو أن طفلك يميل للابتكار والتخيّل والتقليد. وفّر له أدوات فنية مفتوحة ومسرحاً للتعبير الحر دون قوالب جاهزة."}
+};
+
+/* ==================== STATE ==================== */
+let idx = 0;
+const answers = {};       // demographic answers by key
+const scores = {physical:0,visual:0,linguistic:0,social:0,focus:0,logical:0,creative:0};
+const counts = {physical:0,visual:0,linguistic:0,social:0,focus:0,logical:0,creative:0};
+const history = [];        // for back navigation
+let leadDone = false;
+let currency = "SAR";
+
+const CUR = {
+  SAR:{label:"ريال سعودي", price:15},
+  AED:{label:"درهم إماراتي", price:15},
+  QAR:{label:"ريال قطري", price:15}
+};
+
+/* ==================== ELEMENTS ==================== */
+const el = id => document.getElementById(id);
+
+/* ==================== FLOW ==================== */
+function startQuiz(){
+  el('intro').classList.add('hidden');
+  el('quizCard').classList.remove('hidden');
+  el('adMid').classList.remove('hidden');
+  idx = 0;
+  renderQuestion();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[idx];
+  const card = el('quizCard');
+  card.classList.remove('fade'); void card.offsetWidth; card.classList.add('fade');
+
+  const meta = SECTION_META[q.s];
+  el('qSectionTag').textContent = `القسم ${meta.n} من ٨ · ${meta.name}`;
+  el('qText').textContent = q.q;
+
+  const wrap = el('qOptions');
+  wrap.innerHTML = '';
+  q.o.forEach(opt=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = `<span class="tick"></span><span>${opt.t}</span>`;
+    b.onclick = ()=>answer(q, opt);
+    wrap.appendChild(b);
+  });
+
+  el('qBack').classList.toggle('hidden', history.length===0);
+  updateProgress();
+}
+
+function updateProgress(){
+  // Progress bar fades in starting at the 5th question to keep the first few steps light.
+  const shell = el('progressShell');
+  if(idx >= 4){ shell.classList.remove('hidden'); } else { shell.classList.add('hidden'); }
+  const total = QUESTIONS.length;
+  el('progressFill').style.width = Math.round((idx/total)*100) + '%';
+}
+
+function answer(q, opt){
+  history.push({idx, snapshotScore:{...scores}, snapshotCount:{...counts}});
+  if(q.cat === 'demo'){
+    answers[q.key] = opt.val;
+  } else {
+    scores[q.cat] += opt.v;
+    counts[q.cat] += 1;
+  }
+  advance();
+}
+
+function advance(){
+  // lead capture gate
+  if(idx === LEAD_AFTER_INDEX && !leadDone){
+    el('quizCard').classList.add('hidden');
+    el('leadCard').classList.remove('hidden');
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  idx++;
+  if(idx >= QUESTIONS.length){
+    finishQuiz();
+    return;
+  }
+  renderQuestion();
+}
+
+function goBack(){
+  if(history.length===0) return;
+  const prev = history.pop();
+  idx = prev.idx;
+  Object.assign(scores, prev.snapshotScore);
+  Object.assign(counts, prev.snapshotCount);
+  el('leadCard').classList.add('hidden');
+  el('quizCard').classList.remove('hidden');
+  renderQuestion();
+}
+
+/* ==================== LEAD ==================== */
+function submitLead(){
+  const name = el('leadName').value.trim();
+  const email = el('leadEmail').value.trim();
+  const phone = el('leadPhone').value.trim();
+  const consent = el('leadConsent').checked;
+  let ok = true;
+
+  el('errName').style.display = name ? 'none':'block'; if(!name) ok=false;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  el('errEmail').style.display = emailOk ? 'none':'block'; if(!emailOk) ok=false;
+  const phoneOk = /^\+?\d[\d\s\-]{7,}$/.test(phone);
+  el('errPhone').style.display = phoneOk ? 'none':'block'; if(!phoneOk) ok=false;
+  el('errConsent').style.display = consent ? 'none':'block'; if(!consent) ok=false;
+
+  if(!ok) return;
+
+  // Build the lead record (parent-entered data + quiz-derived context).
+  answers.lead = {name, email, phone, consent, at:new Date().toISOString()};
+
+  // Fire-and-forget POST to the Google Apps Script endpoint (does NOT block the UI).
+  sendLead({
+    name, email, phone,
+    childGender: answers.gender || "",
+    childAge: answers.age || "",
+    leadingSkill: currentLeadingSkill(),
+    currency,
+    source: location.href,
+    at: answers.lead.at
+  });
+
+  leadDone = true;
+  el('leadCard').classList.add('hidden');
+  el('quizCard').classList.remove('hidden');
+  idx++; // move past the gate question
+  renderQuestion();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Determine which skill area is currently leading, based on answers so far.
+function currentLeadingSkill(){
+  let best = null, bestPct = -1;
+  Object.keys(TRAIT_INFO).forEach(cat=>{
+    if(counts[cat] > 0){
+      const pct = scores[cat] / (counts[cat]*2);
+      if(pct > bestPct){ bestPct = pct; best = cat; }
+    }
+  });
+  return best ? TRAIT_INFO[best].name : "غير محدد بعد";
+}
+
+// Async, non-blocking submission. Uses a "simple request" (text/plain) so the browser
+// does NOT send a CORS preflight, which Google Apps Script web apps cannot answer.
+// The script reads the body via JSON.parse(e.postData.contents).
+function sendLead(payload){
+  try{
+    fetch(LEAD_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(()=>{ /* swallow network errors silently — UX must not be affected */ });
+  }catch(e){ /* never let lead submission break the flow */ }
+}
+
+/* ---------------------------------------------------------------------------
+   MATCHING GOOGLE APPS SCRIPT (paste into your Sheet → Extensions → Apps Script,
+   then Deploy → New deployment → Web app → Execute as: Me → Who has access: Anyone):
+
+   function doPost(e){
+     try{
+       var data = JSON.parse(e.postData.contents);
+       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Leads")
+                   || SpreadsheetApp.getActiveSpreadsheet().insertSheet("Leads");
+       sheet.appendRow([
+         new Date(), data.name, data.email, data.phone,
+         data.childGender, data.childAge, data.leadingSkill,
+         data.currency, data.source
+       ]);
+       return ContentService.createTextOutput(JSON.stringify({ok:true}))
+              .setMimeType(ContentService.MimeType.JSON);
+     }catch(err){
+       return ContentService.createTextOutput(JSON.stringify({ok:false, error:String(err)}))
+              .setMimeType(ContentService.MimeType.JSON);
+     }
+   }
+--------------------------------------------------------------------------- */
+
+/* ==================== FINISH / RESULT ==================== */
+function finishQuiz(){
+  el('quizCard').classList.add('hidden');
+  el('qBack').classList.add('hidden');
+  el('progressFill').style.width = '100%';
+  el('processing').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // Honest, brief transition tied to rendering the result (not an ad-staring delay).
+  setTimeout(()=>{
+    el('processing').classList.add('hidden');
+    renderResult();
+  }, 1500);
+}
+
+function renderResult(){
+  // percentage per trait = score / maxPossible
+  const ranked = Object.keys(TRAIT_INFO).map(cat=>{
+    const max = counts[cat]*2 || 1;
+    return {cat, pct: Math.round((scores[cat]/max)*100)};
+  }).sort((a,b)=>b.pct-a.pct);
+
+  const top = ranked.slice(0,3);
+  const wrap = el('traits');
+  wrap.innerHTML = '';
+  top.forEach(t=>{
+    const info = TRAIT_INFO[t.cat];
+    const pct = Math.max(t.pct, 25); // floor for visual friendliness
+    const div = document.createElement('div');
+    div.className = 'trait';
+    div.innerHTML = `
+      <div class="top"><span class="name">${info.name}</span><span class="pct">${pct}%</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="desc">${info.desc}</div>`;
+    wrap.appendChild(div);
+  });
+
+  // personalize child reference
+  const gender = answers.gender;
+  el('childRef').textContent = gender === 'أنثى' ? 'طفلتك' : 'طفلك';
+
+  el('result').classList.remove('hidden');
+  el('offer').classList.remove('hidden');
+  el('share').classList.remove('hidden');
+  el('result').classList.add('fade');
+}
+
+/* ==================== CURRENCY ==================== */
+el('curSelect').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  currency = btn.dataset.cur;
+  [...el('curSelect').children].forEach(b=>b.classList.toggle('active', b===btn));
+  el('priceVal').textContent = CUR[currency].price;
+  el('priceCur').textContent = CUR[currency].label;
+});
+
+/* Optional: auto-pick currency by locale (best-effort, falls back to SAR) */
+(function autoCurrency(){
+  try{
+    const loc = (navigator.language||'').toUpperCase();
+    if(loc.includes('AE')) clickCur('AED');
+    else if(loc.includes('QA')) clickCur('QAR');
+  }catch(e){}
+  function clickCur(c){
+    const btn = el('curSelect').querySelector(`[data-cur="${c}"]`);
+    if(btn) btn.click();
+  }
+})();
+
+/* ==================== PAYMENT (Paymob) ==================== */
+function startPayment(method){
+  /* =========================================================
+     // Paymob API Connection Gateway
+     // -------------------------------------------------------
+     // Replace the block below with your real Paymob flow:
+     //   1. Call your backend to create a Paymob order + payment key
+     //      using the selected `currency` and amount CUR[currency].price.
+     //   2. Pass the lead data (answers.lead) as billing/customer info.
+     //   3. Redirect the user to the Paymob iframe / checkout URL,
+     //      choosing the integration ID for the method:
+     //        - 'apple' -> Apple Pay integration ID
+     //        - 'card'  -> Card (Visa/Mastercard) integration ID
+     //        - 'mada'  -> mada integration ID
+     //
+     // Example (pseudocode):
+     //   const res = await fetch('/api/paymob/checkout', {
+     //     method:'POST',
+     //     headers:{'Content-Type':'application/json'},
+     //     body: JSON.stringify({ method, currency, amount: CUR[currency].price, lead: answers.lead })
+     //   });
+     //   const { checkoutUrl } = await res.json();
+     //   window.location.href = checkoutUrl;
+     ========================================================= */
+
+  alert('سيتم توجيهك إلى بوابة الدفع الآمنة Paymob لإتمام الدفع.\n\n(ملاحظة للمطوّر: اربط هذا الزر بنقطة /api/paymob/checkout كما هو موضّح في التعليقات داخل الكود.)');
+}
+
+/* ==================== SHARE ==================== */
+function shareWhatsApp(){
+  const url = window.location.href;
+  const msg = `شِكْت على ميول ومهارات ابني وطلع التقرير مفيد وعرّفني على أنشطة بديلة للشاشات تناسبه! شيكي على ميول أطفالك مجاناً عبر هذا المستشار: ${url}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* ==================== MODALS ==================== */
+const MODALS = {
+  privacy:{title:"سياسة الخصوصية", html:`
+    <p>نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية. توضّح هذه السياسة ما نجمعه وكيف نستخدمه.</p>
+    <h4>البيانات التي نجمعها</h4>
+    <p>نجمع الاسم والبريد الإلكتروني ورقم الواتساب الذي تدخله طوعاً، إضافة إلى إجاباتك على الاستبيان (وهي ملاحظاتك عن طفلك). لا نجمع أي بيانات حسّاسة تتجاوز ذلك.</p>
+    <h4>كيف نستخدمها</h4>
+    <p>نستخدم بياناتك لإرسال ملخّص النتيجة والعروض ذات الصلة، ولتحسين الخدمة. لا نبيع بياناتك لأي طرف ثالث، وقد نستعين بمزوّدي خدمة موثوقين (مثل بوابة الدفع وخدمة البريد) ضمن الحدود اللازمة فقط.</p>
+    <h4>حقوقك</h4>
+    <p>يمكنك طلب الاطلاع على بياناتك أو تعديلها أو حذفها أو إلغاء الاشتراك من الرسائل في أي وقت بمراسلتنا.</p>
+    <h4>ملفات تعريف الارتباط والإعلانات</h4>
+    <p>قد يستخدم هذا الموقع ملفات تعريف ارتباط وإعلانات من جهات خارجية (مثل Google AdSense) لعرض محتوى ملائم. يمكنك ضبط تفضيلات الإعلانات من إعدادات حسابك لدى مزوّد الإعلانات.</p>`},
+  terms:{title:"شروط الخدمة", html:`
+    <p>باستخدامك هذا الموقع فإنك توافق على الشروط التالية.</p>
+    <h4>طبيعة الخدمة</h4>
+    <p>يقدّم الموقع أداة استرشادية تعليمية ومنتجاً رقمياً (دليل أنشطة بصيغة PDF). الأداة لا تُعدّ خدمة تشخيصية أو طبية أو نفسية.</p>
+    <h4>المنتج الرقمي والدفع</h4>
+    <p>يتم الدفع عبر بوابة دفع مرخّصة. بعد إتمام الدفع تحصل على رابط تحميل فوري للملف. نظراً للطبيعة الرقمية الفورية للمنتج، يُرجى مراجعة سياسة الاسترداد قبل الشراء؛ ولأي مشكلة في التحميل يسعدنا مساعدتك.</p>
+    <h4>الملكية الفكرية</h4>
+    <p>جميع المحتويات والملفات مملوكة لنا ولا يجوز إعادة بيعها أو توزيعها دون إذن.</p>
+    <h4>حدود المسؤولية</h4>
+    <p>المحتوى لأغراض إرشادية عامة، ولا نتحمّل مسؤولية القرارات المتّخذة بناءً عليه دون استشارة مختص.</p>`},
+  disclaimer:{title:"إخلاء المسؤولية الاسترشادي", html:`
+    <p><b>هذه الأداة استرشادية وتوعوية فقط.</b></p>
+    <p>النتائج التي يعرضها الموقع تعكس ملاحظاتك أنت كولي أمر عن سلوك طفلك، ولا تُعدّ تقييماً علمياً دقيقاً أو تشخيصاً طبياً أو نفسياً أو تربوياً بأي حال.</p>
+    <p>لا تُغني هذه الأداة ولا الدليل المرفق عن استشارة المختصين (أطباء الأطفال، أخصائيي النطق، الأخصائيين النفسيين والتربويين). إذا لاحظت أي تأخّر نمائي أو سلوكي لدى طفلك، يُرجى الرجوع إلى مختص.</p>
+    <p>كل طفل فريد ويتطوّر وفق إيقاعه الخاص، والهدف من هذه الأداة هو دعم ملاحظتك وتشجيعك على توفير أنشطة محفّزة، لا إصدار أحكام نهائية.</p>`}
+};
+function openModal(key){
+  const m = MODALS[key];
+  el('modalContent').innerHTML = `<h3>${m.title}</h3>${m.html}`;
+  el('modalOverlay').classList.add('open');
+}
+function closeModal(){ el('modalOverlay').classList.remove('open'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ==================== INIT ==================== */
+el('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
